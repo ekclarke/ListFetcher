@@ -19,6 +19,9 @@ import javax.inject.Singleton
 class RemoteDatasource @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
+    
+    // Traditionally, I'd use Retrofit paired with relevant API calls
+    // But since this is a simple datasource, I've streamlined this piece of the handling
 
     private val client: OkHttpClient =
         OkHttpClient.Builder()

@@ -1,7 +1,7 @@
 package com.example.listfetcher.di
 
 import com.example.listfetcher.data.RemoteDatasource
-import com.example.listfetcher.data.Repository
+import com.example.listfetcher.data.RepositoryImpl
 import dagger.Provides
 import javax.inject.Singleton
 
@@ -13,5 +13,5 @@ class ApplicationModule {
 
     @Singleton
     @Provides
-    fun provideRepository(repository: Repository): Repository = repository
+    fun provideRepository(repository: RepositoryImpl): RepositoryImpl = repository
 }
