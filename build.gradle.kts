@@ -2,4 +2,7 @@
 plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.jetbrainsKotlinAndroid) apply false
+    alias(libs.plugins.hilt.android.plugin) apply false
+    alias(libs.plugins.ksp.project) apply false
 }
+

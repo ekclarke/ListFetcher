@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.hilt.android.plugin)
+    alias(libs.plugins.ksp.project)
 }
 
 android {
@@ -15,6 +17,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
     }
 
     buildTypes {
@@ -29,9 +35,13 @@ android {
     buildFeatures {
         compose = true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.2"
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -44,6 +54,7 @@ dependencies {
     val composeBom = platform("androidx.compose:compose-bom:2024.09.02")
     implementation(composeBom)
     androidTestImplementation(composeBom)
+    implementation(libs.compose.compiler)
     implementation(libs.compose.preview)
     implementation(libs.compose.material)
     implementation(libs.compose.runtime)
@@ -61,6 +72,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.appcompat)
     implementation(libs.logcat)
+    implementation(libs.androidx.work)
 
 
     //Moshi
@@ -80,15 +92,15 @@ dependencies {
     implementation(libs.coroutinesAndroid)
 
     //Hilt
-    implementation(libs.hilt.android)
-    implementation(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
     implementation(libs.hilt.worker)
-    implementation(libs.androidx.hilt.compiler)
+    implementation(libs.hilt.android)
 
     //Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    annotationProcessor(libs.room.compiler)
+    ksp(libs.room.compiler)
     implementation(libs.room.paging)
 
     //Testing
@@ -96,7 +108,4 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     testImplementation(libs.androidx.junit)
 
-}
-configurations.implementation {
-    exclude(group = "com.intellij", module = "annotations")
 }
