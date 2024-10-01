@@ -32,7 +32,7 @@ class ApplicationModule {
                 context,
                 Database::class.java,
                 "database"
-            ) //You can future-proof your database by making its name a constant
+            ) // You can future-proof your database by making its name a constant
             .fallbackToDestructiveMigration()
             .build()
     }

@@ -2,16 +2,18 @@ package com.example.listfetcher.data
 
 import android.util.Log
 import com.example.listfetcher.di.IoDispatcher
+import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.withContext
+import logcat.logcat
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
-import kotlinx.coroutines.withContext
-import logcat.logcat
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,7 +21,7 @@ import javax.inject.Singleton
 class RemoteDatasource @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
-    
+
     // Traditionally, I'd use Retrofit paired with relevant API calls
     // But since this is a simple datasource, I've streamlined this piece of the handling
 
@@ -36,7 +38,8 @@ class RemoteDatasource @Inject constructor(
         .add(KotlinJsonAdapterFactory())
         .build()
 
-    private val jsonAdapter = moshi.adapter(DataList::class.java)
+    private val dataList = Types.newParameterizedType(List::class.java, DataObj::class.java)
+    private val jsonAdapter: JsonAdapter<List<DataObj>> = moshi.adapter(dataList)
     private fun getLoggingInterceptor(): HttpLoggingInterceptor {
         val logLevel = HttpLoggingInterceptor.Level.BODY
         return HttpLoggingInterceptor { message ->
@@ -44,22 +47,20 @@ class RemoteDatasource @Inject constructor(
         }.setLevel(logLevel)
     }
 
-    private suspend fun getJsonListAsString(): String =
+    suspend fun getParsedList(): Flow<List<DataObj>?> =
         withContext(ioDispatcher) {
             try {
                 val response = client.newCall(request).execute()
                 if (response.isSuccessful) {
-                    response.body.toString()
+                    return@withContext flowOf(response.body?.string()
+                        ?.let { jsonAdapter.fromJson(it) })
                 } else {
-                    response.code.toString()
+                    return@withContext flowOf(null)
                 }
             } catch (e: Exception) {
                 logcat("SafeCall") { "Exception, ${e.message}" }
-                e.message.toString()
+                return@withContext flowOf(null)
             }
         }
-
-    suspend fun getParsedList(): Flow<DataList?> {
-        return flowOf(jsonAdapter.fromJson(getJsonListAsString()))
-    }
 }
+

@@ -3,9 +3,9 @@ package com.example.listfetcher.data
 import kotlinx.coroutines.flow.Flow
 
 interface Repository {
-    suspend fun getRemoteDataList(): Flow<DataList?>
+    suspend fun getRemoteDataList(): Flow<List<DataObj>?>
 
-    suspend fun insert(dataList: DataList)
+    suspend fun insert(dataList: List<DataObj>)
 
     suspend fun syncDataList()
 

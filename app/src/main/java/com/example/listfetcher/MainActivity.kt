@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,6 +27,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -58,6 +63,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     @Composable
     fun MainScreen(dataList: List<DataObj?>) {
         remember {
@@ -69,13 +75,22 @@ class MainActivity : AppCompatActivity() {
                 modifier = Modifier
                     .fillMaxHeight(0.75F)
                     .fillMaxWidth(1F)
+                    .padding(
+                        horizontal = 0.dp,
+                        vertical = 100.dp
+                    )
             )
             { IndeterminateCircularIndicator() }
         }
         if (dataList.isNotEmpty() && dataList.first() == null) {
-            DataRetrievalErrorDialog()
+            DataRetrievalErrorDialog() //TODO: handle?
         } else {
-            Column {
+            Column(
+                Modifier.padding(
+                    horizontal = 0.dp,
+                    vertical = 28.dp
+                )
+            ) {
                 Header()
                 LazyColumn(
                     horizontalAlignment = Alignment.Start,
@@ -135,22 +150,34 @@ class MainActivity : AppCompatActivity() {
 
     @Composable
     fun Header() {
-        Row {
-            Text(text = "Item ID")
-            Text(text = "List ID")
-            Text(text = "Item Name")
+        Row(Modifier.fillMaxWidth(1.0F)) {
+            TextItem(text = "Item ID", weight = FontWeight.Bold)
+            TextItem(text = "List ID", weight = FontWeight.Bold)
+            TextItem(text = "Item Name", weight = FontWeight.Bold)
         }
     }
 
     @Composable
     fun DataItem(obj: DataObj?) {
         if (obj != null) {
-            Row {
-                Text(text = obj.id.toString())
-                Text(text = obj.listId.toString())
-                Text(text = obj.name.toString())
+            Row(Modifier.fillMaxWidth(1.0F)) {
+                TextItem(text = obj.id.toString(), weight = FontWeight.Normal)
+                TextItem(text = obj.listId.toString(), weight = FontWeight.Normal)
+                TextItem(text = obj.name.toString(), weight = FontWeight.Normal)
+
             }
         }
+    }
+
+    @Composable
+    fun TextItem(text: String, weight: FontWeight) {
+        Text(
+            text = text,
+            color = Color.Cyan,
+            fontWeight = weight,
+            modifier = Modifier.padding(12.dp),
+            textAlign = TextAlign.Center
+        )
     }
 
 }

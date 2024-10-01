@@ -14,21 +14,22 @@ class RepositoryImpl @Inject constructor(
     private val remoteData: RemoteDatasource,
     private val dataDao: DataDao,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
-): Repository {
-    override suspend fun getRemoteDataList(): Flow<DataList?> =
+) : Repository {
+    override suspend fun getRemoteDataList(): Flow<List<DataObj>?> =
         withContext(ioDispatcher) { remoteData.getParsedList() }
 
-    override suspend fun insert(dataList: DataList): Unit = withContext(ioDispatcher) {
-        dataDao.insert(dataList.list)
+    override suspend fun insert(dataList: List<DataObj>): Unit = withContext(ioDispatcher) {
+        dataDao.insert(dataList)
     }
 
     override suspend fun syncDataList(): Unit = withContext(ioDispatcher)
     {
-        getRemoteDataList().map { dataList ->
+        getRemoteDataList().collect { dataList ->
             if (dataList != null)
                 insert(dataList)
+            else
+                insert(emptyList())
         }
-
     }
 
     override suspend fun getAllData(): Flow<List<DataObj?>> = dataDao.getAllData().flowOn(
@@ -41,6 +42,10 @@ class RepositoryImpl @Inject constructor(
         )
 
     override suspend fun getCleanedData(): Flow<List<DataObj?>> =
-        getDataGroupedAndSorted().map { data -> data.filter { it?.name.isNullOrBlank() } }
+        getDataGroupedAndSorted().map { data ->
+            data.filter {
+                !it?.name.isNullOrBlank()
+            }
+        }
             .flowOn(ioDispatcher)
 }
