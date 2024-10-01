@@ -12,4 +12,7 @@ import dagger.hilt.components.SingletonComponent
 interface RepositoryModule {
     @Binds
     fun provideRepository(repository: RepositoryImpl): Repository
+
+    // Although this shows up in Android Studio as an unused interface and function,
+    // Hilt still uses it to inject the repository into the MainViewModel
 }

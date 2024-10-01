@@ -13,10 +13,6 @@ interface DataDao {
     suspend fun insert(dataList: List<DataObj>)
 
     @Transaction
-    @Query("SELECT * FROM data")
-    fun getAllData(): Flow<List<DataObj>>
-
-    @Transaction
-    @Query("SELECT * FROM data GROUP BY listId ORDER BY listId ASC, name ASC")
+    @Query("SELECT * FROM data WHERE name IS NOT null AND name != '' ORDER BY listId ASC, name ASC")
     fun getDataGroupedAndSorted(): Flow<List<DataObj>>
 }

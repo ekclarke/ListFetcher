@@ -11,4 +11,6 @@ data class DataObj(
     val name: String?
 )
 
-//This could be broken down into multiple data types for more complex handling - Entity, Network, etc.
+// This could be broken down into multiple data types for more complex handling
+// For example, DataObjEntity, DataObjNetwork, DataObjModel
+// But in this case, these would all be identical, so I've simplified

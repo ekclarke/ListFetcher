@@ -15,5 +15,4 @@ class ExampleUnitTest {
         assertEquals(4, 2 + 2)
     }
 
-    //TODO: create unit tests for repo funs
 }
