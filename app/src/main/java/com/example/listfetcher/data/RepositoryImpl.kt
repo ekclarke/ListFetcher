@@ -29,7 +29,12 @@ class RepositoryImpl @Inject constructor(
     // but this is least memory-intensive approach
     // that still preserves all original data
     override suspend fun getCleanedData(): Flow<List<DataObj>> =
-        dataDao.getDataGroupedAndSorted().flowOn(
+        dataDao.getCleanDataGroupedAndSorted().flowOn(
+            ioDispatcher
+        )
+
+    override suspend fun getAllData(): Flow<List<DataObj>> =
+        dataDao.getAllDataGroupedAndSorted().flowOn(
             ioDispatcher
         )
 }

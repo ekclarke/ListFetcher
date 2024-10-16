@@ -14,5 +14,9 @@ interface DataDao {
 
     @Transaction
     @Query("SELECT * FROM data WHERE name IS NOT null AND name != '' ORDER BY listId ASC, name ASC")
-    fun getDataGroupedAndSorted(): Flow<List<DataObj>>
+    fun getCleanDataGroupedAndSorted(): Flow<List<DataObj>>
+
+    @Transaction
+    @Query("SELECT * FROM data ORDER BY listId ASC, name ASC")
+    fun getAllDataGroupedAndSorted(): Flow<List<DataObj>>
 }

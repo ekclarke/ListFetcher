@@ -23,15 +23,33 @@ class MainViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
 
+    private var shouldShowNulls: Boolean = false
+
     init {
         syncData()
+        refreshData(shouldShowNulls)
     }
 
     fun syncData() {
         viewModelScope.launch {
             repo.syncDataList()
-            val syncedList = repo.getCleanedData().first()
-            _uiState.value = _uiState.value.copy(dataList = syncedList)
         }
     }
+
+    fun toggleNullData() {
+        refreshData(!shouldShowNulls)
+    }
+
+    fun refreshData(showNulls: Boolean) {
+        viewModelScope.launch {
+            val syncedList = if (showNulls) {
+                repo.getAllData()
+            } else {
+                repo.getCleanedData()
+            }
+            _uiState.value = _uiState.value.copy(dataList = syncedList.first())
+            shouldShowNulls = showNulls
+        }
+    }
+
 }

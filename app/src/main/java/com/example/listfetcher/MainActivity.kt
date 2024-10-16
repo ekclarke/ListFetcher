@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -53,11 +54,7 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        if (OnlineHelper.isOnline(this)) {
-            subscribeUi()
-        } else {
-            setContent { DataRetrievalErrorDialog() }
-        }
+        subscribeUi()
     }
 
     private fun subscribeUi() {
@@ -72,31 +69,30 @@ class MainActivity : AppCompatActivity() {
     fun MainScreen(dataList: List<DataObj?>) {
         remember { dataList }
         if (dataList.isEmpty()) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxHeight(0.75F)
-                    .fillMaxWidth(1F)
-                    .background(Color.Black)
-                    .padding(
-                        horizontal = 0.dp,
-                        vertical = 100.dp
+            if (OnlineHelper.isOnline(this)) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxHeight(0.75F)
+                        .fillMaxWidth(1F)
+                        .background(Color.Black)
+                        .padding(
+                            horizontal = 0.dp, vertical = 100.dp
+                        )
+                ) {
+                    Text(
+                        text = "Loading...", fontWeight = FontWeight.ExtraBold, fontSize = 24.sp
                     )
-            )
-            {
-                Text(
-                    text = "Loading...",
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 24.sp
-                )
-                IndeterminateCircularIndicator()
+                    IndeterminateCircularIndicator()
+                }
+            } else {
+                setContent { DataRetrievalErrorDialog() }
             }
         } else {
             Column(
                 Modifier
                     .padding(
-                        horizontal = 0.dp,
-                        vertical = 28.dp
+                        horizontal = 0.dp, vertical = 28.dp
                     )
                     .background(Color.DarkGray)
             ) {
@@ -110,8 +106,7 @@ class MainActivity : AppCompatActivity() {
 
                 ) {
                     itemsIndexed(dataList) { index, item ->
-                        val backgroundColor =
-                            if (index % 2 == 0) Color.LightGray else Color.White
+                        val backgroundColor = if (index % 2 == 0) Color.LightGray else Color.White
                         DataItem(item, backgroundColor)
                     }
                 }
@@ -133,37 +128,37 @@ class MainActivity : AppCompatActivity() {
     ) {
         val onDismissRequest = { viewModel.syncData() }
 
-        AlertDialog(
-            icon = {
-                Icon(Icons.Default.Warning, contentDescription = "Warning Icon")
-            },
-            title = {
-                Text(text = "Uh-oh!")
-            },
-            text = {
-                Text(text = "Unable to retrieve data. Please check your connection and try again.")
-            },
-            onDismissRequest = {
+        AlertDialog(icon = {
+            Icon(Icons.Default.Warning, contentDescription = "Warning Icon")
+        }, title = {
+            Text(text = "Uh-oh!")
+        }, text = {
+            Text(text = "Unable to retrieve data. Please check your connection and try again.")
+        }, onDismissRequest = {
+            onDismissRequest()
+        }, confirmButton = {
+            TextButton(onClick = {
                 onDismissRequest()
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onDismissRequest()
-                    }
-                ) {
-                    Text("Try again")
-                }
+            }) {
+                Text("Try again")
             }
-        )
+        })
     }
 
     @Composable
     fun Header() {
-        PrettyRow(Color.Black) {
-            HeaderTextItem(text = "Item ID")
-            HeaderTextItem(text = "List ID")
-            HeaderTextItem(text = "Item Name")
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Button(onClick = { viewModel.toggleNullData()
+            }) {
+                HeaderTextItem(text = "Toggle nulls")
+            }
+            PrettyRow(Color.Black) {
+                HeaderTextItem(text = "Item ID")
+                HeaderTextItem(text = "List ID")
+                HeaderTextItem(text = "Item Name")
+            }
         }
     }
 
@@ -186,8 +181,7 @@ class MainActivity : AppCompatActivity() {
             color = Color.Cyan,
             fontWeight = FontWeight.ExtraBold,
             fontSize = 20.sp,
-            modifier = Modifier
-                .padding(horizontal = 12.dp, vertical = 24.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 24.dp),
             textAlign = TextAlign.Center
         )
     }
@@ -199,8 +193,7 @@ class MainActivity : AppCompatActivity() {
             color = Color.Black,
             fontWeight = FontWeight.SemiBold,
             fontSize = 16.sp,
-            modifier = Modifier
-                .padding(12.dp),
+            modifier = Modifier.padding(12.dp),
             textAlign = TextAlign.Center
         )
     }

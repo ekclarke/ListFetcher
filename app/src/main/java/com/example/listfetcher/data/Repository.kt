@@ -5,4 +5,5 @@ import kotlinx.coroutines.flow.Flow
 interface Repository {
     suspend fun syncDataList()
     suspend fun getCleanedData(): Flow<List<DataObj>>
+    suspend fun getAllData(): Flow<List<DataObj>>
 }
